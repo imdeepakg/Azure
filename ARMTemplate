@@ -2,9 +2,9 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-	"param_vmName": {
-            "type": "String"
-	},
+    "param_vmName": {
+      "type": "String"
+    },
     "adminUsername": {
       "type": "string",
       "metadata": {
@@ -46,13 +46,10 @@
         "description": "Location for all resources."
       }
     },
-	"builtInRoleType": {
-		  "type": "string",
-		  "defaultValue": "Reader"
-		},
-	"rbacGuid": {
-	  "type": "string"
-	}
+    "builtInRoleType": {
+      "type": "string",
+      "defaultValue": "Reader"
+    }
   },
   "variables": {
     "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'sawinvm')]",
@@ -64,7 +61,7 @@
     "vmName": "SimpleWinVM",
     "virtualNetworkName": "MyVNET",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-	"Reader": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]"
+    "Reader": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]"
   },
   "resources": [
     {
@@ -142,9 +139,9 @@
       "apiVersion": "2018-10-01",
       "name": "[parameters('param_vmName')]",
       "location": "[parameters('location')]",
-	  "identity": {
-            "type": "SystemAssigned"
-		},
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
