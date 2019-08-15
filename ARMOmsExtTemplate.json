@@ -73,7 +73,7 @@
   "resources": [
     {
       "type": "extensions",
-      "name": "Microsoft.EnterpriseCloud.Monitoring",
+      "name": "MicrosoftMonitoringAgent",
       "apiVersion": "[variables('apiVersion')]",
       "location": "[parameters('location')]",
       "dependsOn": [
