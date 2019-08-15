@@ -73,7 +73,7 @@
   "resources": [
     {
       "type": "extensions",
-      "name": "MicrosoftMonitoringAgent",
+      "name": "[variables('vmName')]",
       "apiVersion": "[variables('apiVersion')]",
       "location": "[parameters('location')]",
       "dependsOn": [
