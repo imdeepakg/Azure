@@ -73,7 +73,7 @@
   "resources": [
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "OMSExtension",
+      "name": "[concat(variables('vmName'), '/OMSExtension')]",
       "apiVersion": "[variables('apiVersion')]",
       "location": "[parameters('location')]",
       "dependsOn": [
