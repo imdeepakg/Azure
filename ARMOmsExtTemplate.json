@@ -63,8 +63,8 @@
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "Subnet",
     "subnetPrefix": "10.0.0.0/24",
-    "publicIPAddressName": "myPublicIP",
-    "virtualNetworkName": "MyVNET",
+    "publicIPAddressName": "[concat(uniquestring(resourceGroup().id), 'myPubIp')]",
+    "virtualNetworkName": "[concat(uniquestring(resourceGroup().id), 'myVmNet')]",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "Reader": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
     "apiVersion": "2015-06-15"
