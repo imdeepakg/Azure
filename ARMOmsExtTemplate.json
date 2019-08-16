@@ -64,7 +64,6 @@
     "subnetName": "Subnet",
     "subnetPrefix": "10.0.0.0/24",
     "publicIPAddressName": "myPublicIP",
-    "vmName": "SimpleWinVM",
     "virtualNetworkName": "MyVNET",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "Reader": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
@@ -73,11 +72,11 @@
   "resources": [
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), '/OMSExtension')]",
+      "name": "[concat(parameters('param_vmName'), '/OMSExtension')]",
       "apiVersion": "[variables('apiVersion')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('param_vmName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
