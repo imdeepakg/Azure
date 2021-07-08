@@ -51,13 +51,19 @@
       "defaultValue": "Reader"
     },
     "dataCollectionRules_name": {
-            "defaultValue": "[concat(resourceGroup().name, '-DCR')]",
-            "type": "String"
-        },
-	"workspace_resource_id": {
-		"defaultValue": "/subscriptions/d67b705f-d9a4-4cee-881a-3bab1c20e567/resourceGroups/MRGp/providers/Microsoft.OperationalInsights/workspaces/amabugbash",
-		"type": "String"
-	}
+      "defaultValue": "[concat(resourceGroup().name, '-DCR')]",
+      "type": "String"
+    },
+    "workspace_resource_id": {
+      "type": "String"
+    },
+    "associationName": {
+      "type": "string",
+      "defaultValue": "[concat(uniquestring(resourceGroup().id), '-DCRLink')]",
+      "metadata": {
+        "description": "Name of the association."
+      }
+    }
   },
   "variables": {
     "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'sawinvm')]",
@@ -72,13 +78,112 @@
     "apiVersion": "2020-06-01"
   },
   "resources": [
-	{
-	  "name": "[parameters('param_vmName')]",
-	  "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
-	  "apiVersion": "2018-11-30",
-	  "tags": {},
-	  "location": "[parameters('location')]"
-	},
+    {
+      "type": "Microsoft.Insights/dataCollectionRules",
+      "apiVersion": "2021-04-01",
+      "name": "[parameters('dataCollectionRules_name')]",
+      "location": "[parameters('location')]",
+      "kind": "Windows",
+      "properties": {
+        "dataSources": {
+          "performanceCounters": [
+            {
+              "streams": [
+                "Microsoft-Perf"
+              ],
+              "samplingFrequencyInSeconds": 10,
+              "counterSpecifiers": [
+                "\\Processor Information(_Total)\\% Processor Time",
+                "\\Processor Information(_Total)\\% Privileged Time",
+                "\\Processor Information(_Total)\\% User Time",
+                "\\Processor Information(_Total)\\Processor Frequency",
+                "\\System\\Processes",
+                "\\Process(_Total)\\Thread Count",
+                "\\Process(_Total)\\Handle Count",
+                "\\System\\System Up Time",
+                "\\System\\Context Switches/sec",
+                "\\System\\Processor Queue Length",
+                "\\Memory\\% Committed Bytes In Use",
+                "\\Memory\\Available Bytes",
+                "\\Memory\\Committed Bytes",
+                "\\Memory\\Cache Bytes",
+                "\\Memory\\Pool Paged Bytes",
+                "\\Memory\\Pool Nonpaged Bytes",
+                "\\Memory\\Pages/sec",
+                "\\Memory\\Page Faults/sec",
+                "\\Process(_Total)\\Working Set",
+                "\\Process(_Total)\\Working Set - Private",
+                "\\LogicalDisk(_Total)\\% Disk Time",
+                "\\LogicalDisk(_Total)\\% Disk Read Time",
+                "\\LogicalDisk(_Total)\\% Disk Write Time",
+                "\\LogicalDisk(_Total)\\% Idle Time",
+                "\\LogicalDisk(_Total)\\Disk Bytes/sec",
+                "\\LogicalDisk(_Total)\\Disk Read Bytes/sec",
+                "\\LogicalDisk(_Total)\\Disk Write Bytes/sec",
+                "\\LogicalDisk(_Total)\\Disk Transfers/sec",
+                "\\LogicalDisk(_Total)\\Disk Reads/sec",
+                "\\LogicalDisk(_Total)\\Disk Writes/sec",
+                "\\LogicalDisk(_Total)\\Avg. Disk sec/Transfer",
+                "\\LogicalDisk(_Total)\\Avg. Disk sec/Read",
+                "\\LogicalDisk(_Total)\\Avg. Disk sec/Write",
+                "\\LogicalDisk(_Total)\\Avg. Disk Queue Length",
+                "\\LogicalDisk(_Total)\\Avg. Disk Read Queue Length",
+                "\\LogicalDisk(_Total)\\Avg. Disk Write Queue Length",
+                "\\LogicalDisk(_Total)\\% Free Space",
+                "\\LogicalDisk(_Total)\\Free Megabytes",
+                "\\Network Interface(*)\\Bytes Total/sec",
+                "\\Network Interface(*)\\Bytes Sent/sec",
+                "\\Network Interface(*)\\Bytes Received/sec",
+                "\\Network Interface(*)\\Packets/sec",
+                "\\Network Interface(*)\\Packets Sent/sec",
+                "\\Network Interface(*)\\Packets Received/sec",
+                "\\Network Interface(*)\\Packets Outbound Errors",
+                "\\Network Interface(*)\\Packets Received Errors"
+              ],
+              "name": "perfCounterDataSource10"
+            }
+          ],
+          "windowsEventLogs": [
+            {
+              "streams": [
+                "Microsoft-Event"
+              ],
+              "xPathQueries": [
+                "Application!*[System[(Level=2)]]",
+                "System!*[System[(Level=2)]]"
+              ],
+              "name": "eventLogsDataSource"
+            }
+          ]
+        },
+        "destinations": {
+          "logAnalytics": [
+            {
+              "workspaceResourceId": "[parameters('workspace_resource_id')]",
+              "name": "la-622494052"
+            }
+          ]
+        },
+        "dataFlows": [
+          {
+            "streams": [
+              "Microsoft-Perf",
+              "Microsoft-Event"
+            ],
+            "destinations": [
+              "la-622494052"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('param_vmName')]",
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2018-11-30",
+      "tags": {},
+      "location": "[parameters('location')]"
+    },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('param_vmName'), '/AMAExtension')]",
@@ -92,15 +197,15 @@
         "type": "AzureMonitorWindowsAgent",
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,
-         "settings": {
-			"authentication": {  
-				"managedIdentity" : { 
-					"identifier-type": "mi_res_id", 
-					"identifier-value": "[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('param_vmName'))]"
-				} 
-			}  
-		}
-	  }
+        "settings": {
+          "authentication": {
+            "managedIdentity": {
+              "identifier-type": "mi_res_id",
+              "identifier-value": "[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('param_vmName'))]"
+            }
+          }
+        }
+      }
     },
     {
       "type": "Microsoft.Storage/storageAccounts",
@@ -179,14 +284,14 @@
       "location": "[parameters('location')]",
       "identity": {
         "type": "userAssigned",
-         "userAssignedIdentities": {
-             "[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('param_vmName'))]": {}
-         }
+        "userAssignedIdentities": {
+          "[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('param_vmName'))]": {}
+        }
       },
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
-		"[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('param_vmName'))]"
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('param_vmName'))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -230,105 +335,15 @@
         }
       }
     },
-	{
-		"type": "Microsoft.Insights/dataCollectionRules",
-		"apiVersion": "2021-04-01",
-		"name": "[parameters('dataCollectionRules_name')]",
-		"location": "[parameters('location')]",
-		"kind": "Windows",
-		"properties": {
-			"dataSources": {
-				"performanceCounters": [
-					{
-						"streams": [
-							"Microsoft-Perf"
-						],
-						"samplingFrequencyInSeconds": 10,
-						"counterSpecifiers": [
-							"\\Processor Information(_Total)\\% Processor Time",
-							"\\Processor Information(_Total)\\% Privileged Time",
-							"\\Processor Information(_Total)\\% User Time",
-							"\\Processor Information(_Total)\\Processor Frequency",
-							"\\System\\Processes",
-							"\\Process(_Total)\\Thread Count",
-							"\\Process(_Total)\\Handle Count",
-							"\\System\\System Up Time",
-							"\\System\\Context Switches/sec",
-							"\\System\\Processor Queue Length",
-							"\\Memory\\% Committed Bytes In Use",
-							"\\Memory\\Available Bytes",
-							"\\Memory\\Committed Bytes",
-							"\\Memory\\Cache Bytes",
-							"\\Memory\\Pool Paged Bytes",
-							"\\Memory\\Pool Nonpaged Bytes",
-							"\\Memory\\Pages/sec",
-							"\\Memory\\Page Faults/sec",
-							"\\Process(_Total)\\Working Set",
-							"\\Process(_Total)\\Working Set - Private",
-							"\\LogicalDisk(_Total)\\% Disk Time",
-							"\\LogicalDisk(_Total)\\% Disk Read Time",
-							"\\LogicalDisk(_Total)\\% Disk Write Time",
-							"\\LogicalDisk(_Total)\\% Idle Time",
-							"\\LogicalDisk(_Total)\\Disk Bytes/sec",
-							"\\LogicalDisk(_Total)\\Disk Read Bytes/sec",
-							"\\LogicalDisk(_Total)\\Disk Write Bytes/sec",
-							"\\LogicalDisk(_Total)\\Disk Transfers/sec",
-							"\\LogicalDisk(_Total)\\Disk Reads/sec",
-							"\\LogicalDisk(_Total)\\Disk Writes/sec",
-							"\\LogicalDisk(_Total)\\Avg. Disk sec/Transfer",
-							"\\LogicalDisk(_Total)\\Avg. Disk sec/Read",
-							"\\LogicalDisk(_Total)\\Avg. Disk sec/Write",
-							"\\LogicalDisk(_Total)\\Avg. Disk Queue Length",
-							"\\LogicalDisk(_Total)\\Avg. Disk Read Queue Length",
-							"\\LogicalDisk(_Total)\\Avg. Disk Write Queue Length",
-							"\\LogicalDisk(_Total)\\% Free Space",
-							"\\LogicalDisk(_Total)\\Free Megabytes",
-							"\\Network Interface(*)\\Bytes Total/sec",
-							"\\Network Interface(*)\\Bytes Sent/sec",
-							"\\Network Interface(*)\\Bytes Received/sec",
-							"\\Network Interface(*)\\Packets/sec",
-							"\\Network Interface(*)\\Packets Sent/sec",
-							"\\Network Interface(*)\\Packets Received/sec",
-							"\\Network Interface(*)\\Packets Outbound Errors",
-							"\\Network Interface(*)\\Packets Received Errors"
-						],
-						"name": "perfCounterDataSource10"
-					}
-				],
-				"windowsEventLogs": [
-					{
-						"streams": [
-							"Microsoft-Event"
-						],
-						"xPathQueries": [
-							"Application!*[System[(Level=2)]]",
-							"System!*[System[(Level=2)]]"
-						],
-						"name": "eventLogsDataSource"
-					}
-				]
-			},
-			"destinations": {
-				"logAnalytics": [
-					{
-						"workspaceResourceId": "[parameters('workspace_resource_id')]",
-						"name": "la-622494052"
-					}
-				]
-			},
-			"dataFlows": [
-				{
-					"streams": [
-						"Microsoft-Perf",
-						"Microsoft-Event"
-					],
-					"destinations": [
-						"la-622494052"
-					]
-				}
-			]
-		}
-     }
+    {
+      "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
+      "name": "[concat(parameters('param_vmName'),'/microsoft.insights/', parameters('associationName'))]",
+      "apiVersion": "2019-11-01-preview",
+      "properties": {
+        "description": "Association of data collection rule. Deleting this association will break the data collection for this virtual machine.",
+        "dataCollectionRuleId": "[resourceID('Microsoft.Insights/dataCollectionRules',parameters('dataCollectionRules_name'))]"
+      }
+    }
   ],
   "outputs": {
     "hostname": {
