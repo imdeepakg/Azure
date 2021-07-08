@@ -185,29 +185,6 @@
       "location": "[parameters('location')]"
     },
     {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('param_vmName'), '/AMAExtension')]",
-      "apiVersion": "[variables('apiVersion')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('param_vmName'))]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.Azure.Monitor",
-        "type": "AzureMonitorWindowsAgent",
-        "typeHandlerVersion": "1.0",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "authentication": {
-            "managedIdentity": {
-              "identifier-type": "mi_res_id",
-              "identifier-value": "[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('param_vmName'))]"
-            }
-          }
-        }
-      }
-    },
-    {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2018-11-01",
       "name": "[variables('storageAccountName')]",
@@ -342,6 +319,29 @@
       "properties": {
         "description": "Association of data collection rule. Deleting this association will break the data collection for this virtual machine.",
         "dataCollectionRuleId": "[resourceID('Microsoft.Insights/dataCollectionRules',parameters('dataCollectionRules_name'))]"
+      }
+    },
+	{
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('param_vmName'), '/AMAExtension')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('param_vmName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Monitor",
+        "type": "AzureMonitorWindowsAgent",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "authentication": {
+            "managedIdentity": {
+              "identifier-type": "mi_res_id",
+              "identifier-value": "[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('param_vmName'))]"
+            }
+          }
+        }
       }
     }
   ],
