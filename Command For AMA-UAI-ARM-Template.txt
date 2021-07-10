@@ -1,0 +1,16 @@
+$resourceGroupName = "deepak101"
+$adminUsername = "deepak101"
+$adminPassword = Read-Host -Prompt "Enter the administrator password" -AsSecureString
+$dnsLabelPrefix = "dnspfix12343"
+$workspace_resource_id="<resource id of workspace here>"
+$vmName = "amavmtest1"
+
+New-AzResourceGroupDeployment `
+    -ResourceGroupName $resourceGroupName `
+    -TemplateUri "https://raw.githubusercontent.com/imdeepakg/Azure/master/AMA-UAI-ARM-Template.json" `
+    -adminUsername $adminUsername `
+    -adminPassword $adminPassword `
+    -dnsLabelPrefix $dnsLabelPrefix `
+    -workspace_resource_id $workspace_resource_id `
+    -vmName $vmName
+	
