@@ -319,7 +319,10 @@
       "properties": {
         "description": "Association of data collection rule. Deleting this association will break the data collection for this virtual machine.",
         "dataCollectionRuleId": "[resourceID('Microsoft.Insights/dataCollectionRules',parameters('dataCollectionRules_name'))]"
-      }
+      },
+	  "dependsOn": [
+		"[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+      ]
     },
 	{
       "type": "Microsoft.Compute/virtualMachines/extensions",
