@@ -9,7 +9,7 @@
    "createdBy": "9ad9021e-5ba2-4a97-9111-e2ed32909781",
    "createdOn": "2022-05-27T18:20:50.6120278Z",
    "updatedBy": "9ad9021e-5ba2-4a97-9111-e2ed32909781",
-   "updatedOn": "2022-05-27T18:37:56.0494347Z"
+   "updatedOn": "2022-05-27T18:46:33.7838785Z"
   },
   "parameters": {
    "effect": {
@@ -127,11 +127,20 @@
     "groupNames": []
    },
    {
-    "policyDefinitionReferenceId": "Configure Windows virtual machine scale sets to run Azure Monitor Agent using system-assigned manage_1",
-    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/4efbd9d8-6bc6-45f6-9be2-7fe9dd5d89ff",
+    "policyDefinitionReferenceId": "Configure Windows virtual machine scale sets to run Azure Monitor Agent with user-assigned managed i_1",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/98569e20-8f32-4f31-bf34-0e91590ae9d3",
     "parameters": {
      "effect": {
       "value": "[parameters('effect')]"
+     },
+     "bringYourOwnUserAssignedManagedIdentity": {
+      "value": "[parameters('bringYourOwnUserAssignedManagedIdentity')]"
+     },
+     "userAssignedManagedIdentityName": {
+      "value": "[parameters('userAssignedManagedIdentityName')]"
+     },
+     "userAssignedManagedIdentityResourceGroup": {
+      "value": "[parameters('userAssignedManagedIdentityResourceGroup')]"
      },
      "listOfWindowsImageIdToInclude": {
       "value": "[parameters('listOfWindowsImageIdToInclude')]"
