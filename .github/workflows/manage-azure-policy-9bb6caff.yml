@@ -1,0 +1,32 @@
+name: manage-azure-policy-9bb6caff
+on:
+  workflow_dispatch:
+    inputs:
+      remarks:
+        description: 'Reason for triggering the workflow run'
+        required: false
+        default: 'Updating Azure Policies'
+
+
+## Uncomment the following if you wish to automatically trigger workflow run with every commit
+#
+#  push:
+#    paths:
+#      - 'initiatives/Monitor_your_Windows_virtual_machines_and_virtual_machine_scale_sets_by_deploy_24b2592643c04f7f9a7c7d51/**'
+#      - .github/workflows/manage-azure-policy-9bb6caff.yml
+jobs:
+  apply-azure-policy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS_9bb6caff}}
+        allow-no-subscriptions: true
+    - name: Create or Update Azure Policies
+      uses: azure/manage-azure-policy@v0
+      with:
+        paths: |
+          initiatives/Monitor_your_Windows_virtual_machines_and_virtual_machine_scale_sets_by_deploy_24b2592643c04f7f9a7c7d51/**
