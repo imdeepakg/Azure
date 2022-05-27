@@ -1,0 +1,170 @@
+{
+ "properties": {
+  "displayName": "Monitor your Windows virtual machines and virtual machine scale sets by deploy",
+  "policyType": "Custom",
+  "description": "Monitor and secure your Windows virtual machines and virtual machine scale sets by deploying the Azure Monitor Agent extension and associating the machines with a specified Data Collection Rule. Azure Monitor Agent will authenticate via user-assigned managed identity. Deployment will occur on machines with supported OS images (or machines matching the provided list of images) in supported regions.",
+  "metadata": {
+   "category": "MonitorTest",
+   "version": "1.0.0",
+   "createdBy": "9ad9021e-5ba2-4a97-9111-e2ed32909781",
+   "createdOn": "2022-05-27T18:20:50.6120278Z",
+   "updatedBy": null,
+   "updatedOn": null
+  },
+  "parameters": {
+   "effect": {
+    "type": "string",
+    "metadata": {
+     "displayName": "Effect",
+     "description": "Enable or disable the execution of the policy."
+    },
+    "allowedValues": [
+     "DeployIfNotExists",
+     "Disabled"
+    ],
+    "defaultValue": "DeployIfNotExists"
+   },
+   "DcrResourceId": {
+    "type": "string",
+    "metadata": {
+     "displayName": "Data Collection Rule Resource Id",
+     "description": "Resource Id of the Data Collection Rule that the virtual machines in scope should point to."
+    }
+   },
+   "userAssignedManagedIdentityName": {
+    "type": "string",
+    "metadata": {
+     "displayName": "User-Assigned Managed Identity Name",
+     "description": "The name of the user-assigned managed identity which Azure Monitor Agent will use for authentication when 'Bring Your Own User-Assigned Managed Identity' is set to true."
+    }
+   },
+   "userAssignedManagedIdentityResourceGroup": {
+    "type": "string",
+    "metadata": {
+     "displayName": "User-Assigned Managed Identity Resource Group",
+     "description": "The resource group of the user-assigned managed identity which Azure Monitor Agent will use for authentication when 'Bring Your Own User-Assigned Managed Identity' is set to true."
+    }
+   },
+   "bringYourOwnUserAssignedManagedIdentity": {
+    "type": "boolean",
+    "metadata": {
+     "displayName": "Bring Your Own User-Assigned Managed Identity",
+     "description": "If set to true, Azure Monitor Agent will use the user-assigned managed identity specified via the 'User-Assigned Managed Identity ...' parameters for authentication. Otherwise, Azure Monitor Agent will use the user-assigned managed identity /subscriptions/<subscription-id>/resourceGroups/built-in-identity-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/built-in-identity-<location> for authentication."
+    },
+    "allowedValues": [
+     false,
+     true
+    ]
+   },
+   "listOfWindowsImageIdToInclude": {
+    "type": "array",
+    "metadata": {
+     "displayName": "Additional Virtual Machine Images",
+     "description": "List of virtual machine images that have supported Windows OS to add to scope. Example values: '/subscriptions/<subscriptionId>/resourceGroups/YourResourceGroup/providers/Microsoft.Compute/images/ContosoStdImage'"
+    },
+    "defaultValue": []
+   }
+  },
+  "policyDefinitions": [
+   {
+    "policyDefinitionReferenceId": "Assign Built-In User-Assigned Managed Identity to Virtual Machines_1",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/d367bd60-64ca-4364-98ea-276775bddd94",
+    "parameters": {
+     "bringYourOwnUserAssignedManagedIdentity": {
+      "value": "[parameters('bringYourOwnUserAssignedManagedIdentity')]"
+     },
+     "userAssignedIdentityName": {
+      "value": "[parameters('userAssignedManagedIdentityName')]"
+     },
+     "identityResourceGroup": {
+      "value": "[parameters('userAssignedManagedIdentityResourceGroup')]"
+     },
+     "effect": {
+      "value": "[parameters('effect')]"
+     }
+    },
+    "groupNames": []
+   },
+   {
+    "policyDefinitionReferenceId": "Assign Built-In User-Assigned Managed Identity to Virtual Machine Scale Sets_1",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/516187d4-ef64-4a1b-ad6b-a7348502976c",
+    "parameters": {
+     "bringYourOwnUserAssignedManagedIdentity": {
+      "value": "[parameters('bringYourOwnUserAssignedManagedIdentity')]"
+     },
+     "userAssignedIdentityName": {
+      "value": "[parameters('userAssignedManagedIdentityName')]"
+     },
+     "identityResourceGroup": {
+      "value": "[parameters('userAssignedManagedIdentityResourceGroup')]"
+     },
+     "effect": {
+      "value": "[parameters('effect')]"
+     }
+    },
+    "groupNames": []
+   },
+   {
+    "policyDefinitionReferenceId": "Configure Windows virtual machines to run Azure Monitor Agent with user-assigned managed identity-ba_1",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/637125fd-7c39-4b94-bb0a-d331faf333a9",
+    "parameters": {
+     "effect": {
+      "value": "[parameters('effect')]"
+     },
+     "bringYourOwnUserAssignedManagedIdentity": {
+      "value": "[parameters('bringYourOwnUserAssignedManagedIdentity')]"
+     },
+     "userAssignedManagedIdentityName": {
+      "value": "[parameters('userAssignedManagedIdentityName')]"
+     },
+     "userAssignedManagedIdentityResourceGroup": {
+      "value": "[parameters('userAssignedManagedIdentityResourceGroup')]"
+     },
+     "listOfWindowsImageIdToInclude": {
+      "value": "[parameters('listOfWindowsImageIdToInclude')]"
+     }
+    },
+    "groupNames": []
+   },
+   {
+    "policyDefinitionReferenceId": "Assign Built-In User-Assigned Managed Identity to Virtual Machine Scale Sets_2",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/516187d4-ef64-4a1b-ad6b-a7348502976c",
+    "parameters": {
+     "bringYourOwnUserAssignedManagedIdentity": {
+      "value": "[parameters('bringYourOwnUserAssignedManagedIdentity')]"
+     },
+     "userAssignedIdentityName": {
+      "value": "[parameters('userAssignedManagedIdentityName')]"
+     },
+     "identityResourceGroup": {
+      "value": "[parameters('userAssignedManagedIdentityResourceGroup')]"
+     },
+     "effect": {
+      "value": "[parameters('effect')]"
+     }
+    },
+    "groupNames": []
+   },
+   {
+    "policyDefinitionReferenceId": "Configure Windows Machines to be associated with a Data Collection Rule_1",
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/eab1f514-22e3-42e3-9a1f-e1dc9199355c",
+    "parameters": {
+     "effect": {
+      "value": "[parameters('effect')]"
+     },
+     "listOfWindowsImageIdToInclude": {
+      "value": "[parameters('listOfWindowsImageIdToInclude')]"
+     },
+     "dcrResourceId": {
+      "value": "[parameters('DcrResourceId')]"
+     }
+    },
+    "groupNames": []
+   }
+  ],
+  "policyDefinitionGroups": []
+ },
+ "id": "/subscriptions/de562ba1-156d-4b7f-9777-d007f73690a9/providers/Microsoft.Authorization/policySetDefinitions/24b2592643c04f7f9a7c7d51",
+ "type": "Microsoft.Authorization/policySetDefinitions",
+ "name": "24b2592643c04f7f9a7c7d51"
+}
